@@ -91,6 +91,14 @@ class ACMOJClient:
 
         return result
 
+    def submit_code(self, problem_id: int, language: str, code: str) -> Optional[Dict]:
+        data = {"language": language, "code": code}
+        result = self._make_request("POST", f"/problem/{problem_id}/submit", data=data)
+        if result and 'id' in result:
+            self._save_submission_id(result['id'])
+
+        return result
+
     def get_submission_detail(self, submission_id: int) -> Optional[Dict]:
         return self._make_request("GET", f"/submission/{submission_id}")
 
@@ -140,6 +148,7 @@ def main():
             print(f"Error: Failed to read code file: {e}")
             exit(1)
 
+        # Submit code directly
         result = client.submit_code(args.problem_id, args.language, code_text)
 
     elif args.command == "status":
